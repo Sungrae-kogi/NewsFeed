@@ -28,6 +28,8 @@ public class User extends Timestamped {
   @Column(nullable = false)
   private String password;
 
+  private boolean isEnabled = false;
+
 //    private List<User> friends;
 
   public User(String email, String password, String nickname, String introduction) {
@@ -35,5 +37,9 @@ public class User extends Timestamped {
     this.password = password;
     this.nickname = nickname;
     this.introduction = introduction;
+  }
+
+  public void delete() {
+    this.isEnabled = true;
   }
 }
