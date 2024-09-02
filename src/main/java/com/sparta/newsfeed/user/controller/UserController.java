@@ -1,10 +1,14 @@
 package com.sparta.newsfeed.user.controller;
 
-import com.sparta.newsfeed.user.dto.UserCreateRequestDto;
+import com.sparta.newsfeed.user.dto.UserLoginRequestDto;
+import com.sparta.newsfeed.user.dto.request.UserCreateRequestDto;
 import com.sparta.newsfeed.user.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,8 +20,29 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserService userService;
 
+    /**
+     * 회원가입을 수행합니다
+     * @param request email, password, nickname, introduction를 받습니다
+     *                반환타입은 없습니다
+     */
     @PostMapping("/users")
     public void createUser(@Valid @RequestBody UserCreateRequestDto request) {
         userService.createUser(request);
+    }
+
+    /**
+     * 로그인을 수행합니다.
+     * @param request email, password를 받습니다
+     * @return jwt token을반환하여, 추후 작업시 헤더에 넣어야 합니다.
+     */
+    @PostMapping("/auth/login")
+    public ResponseEntity<String> loginUser(@RequestBody UserLoginRequestDto request) {
+        String token = userService.loginUser(request);
+        return new ResponseEntity<>(token, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/")
+    public String hello(HttpServletRequest request) {
+        return userService.getUserId(request);
     }
 }

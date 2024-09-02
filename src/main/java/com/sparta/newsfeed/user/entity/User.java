@@ -1,11 +1,9 @@
 package com.sparta.newsfeed.user.entity;
 
 import com.sparta.newsfeed.common.Timestamped;
-import com.sparta.newsfeed.user.dto.UserCreateRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import java.util.List;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -31,7 +29,6 @@ public class User extends Timestamped {
   private String password;
 
 //    private List<User> friends;
-
 
   public User(String email, String password, String nickname, String introduction) {
     this.email = email;
