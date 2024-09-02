@@ -1,5 +1,6 @@
 package com.sparta.newsfeed.user.controller;
 
+import com.sparta.newsfeed.user.dto.UserDeleteRquestDto;
 import com.sparta.newsfeed.user.dto.UserLoginRequestDto;
 import com.sparta.newsfeed.user.dto.request.UserCreateRequestDto;
 import com.sparta.newsfeed.user.service.UserService;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,8 +43,16 @@ public class UserController {
         return new ResponseEntity<>(token, HttpStatus.CREATED);
     }
 
-    @GetMapping("/")
-    public String hello(HttpServletRequest request) {
-        return userService.getUserId(request);
+    /**
+     * 회원 탈퇴 기능을 수행합니다. 요구사항에따라 soft delete를 수행합니다
+     * @param userId 삭제할 유저 아이디를 받습니다.
+     * @param request password를 입력합니다
+     * @return
+     */
+    @PostMapping("/users/{userId}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId, @RequestBody UserDeleteRquestDto request)
+    {
+        userService.deleteUser(userId, request);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
