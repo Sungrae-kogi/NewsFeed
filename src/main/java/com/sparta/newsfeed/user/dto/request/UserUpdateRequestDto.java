@@ -6,4 +6,5 @@ import lombok.Getter;
 public class UserUpdateRequestDto {
     private String nickname;
     private String introduction;
+    private String password;
 }
