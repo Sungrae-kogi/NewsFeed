@@ -19,6 +19,7 @@ public class UserService {
   private final PasswordEncoder passwordEncoder;
   private final JwtUtil jwtUtil;
 
+  @Transactional
   public void createUser(UserCreateRequestDto request) {
     User existUser = userRepository.findByEmail(request.getEmail());
     if (existUser != null) {throw new IllegalArgumentException("해당 이메일이 이미 있습니다.");}
@@ -39,13 +40,6 @@ public class UserService {
     String token = jwtUtil.createToken(user.getId());
     return token;
   }
-
-  //테스트용 남겨두기
-//  public String getUserId(HttpServletRequest request) {
-//    String token = jwtUtil.getJwtFromHeader(request);
-//    String userId = jwtUtil.getUserIdFromToken(token);
-//    return userId;
-//  }
 
   @Transactional
   public void deleteUser(Long userId, UserDeleteRquestDto request) {
