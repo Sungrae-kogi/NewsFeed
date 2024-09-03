@@ -27,7 +27,4 @@ public class Post extends Timestamped {
     @JoinColumn(name="user_id", nullable=false)
     private User user;
 
-    private List<Comment> comments;
-
-    private List<PostLike> likes;
 }
