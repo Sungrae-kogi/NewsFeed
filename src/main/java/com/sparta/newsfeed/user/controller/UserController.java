@@ -1,15 +1,13 @@
 package com.sparta.newsfeed.user.controller;
 
-import com.sparta.newsfeed.user.dto.UserDeleteRquestDto;
-import com.sparta.newsfeed.user.dto.UserLoginRequestDto;
 import com.sparta.newsfeed.user.dto.request.UserCreateRequestDto;
+import com.sparta.newsfeed.user.dto.request.UserDeleteRquestDto;
+import com.sparta.newsfeed.user.dto.request.UserLoginRequestDto;
 import com.sparta.newsfeed.user.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

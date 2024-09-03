@@ -2,12 +2,11 @@ package com.sparta.newsfeed.user.service;
 
 import com.sparta.newsfeed.common.config.JwtUtil;
 import com.sparta.newsfeed.common.config.PasswordEncoder;
-import com.sparta.newsfeed.user.dto.UserDeleteRquestDto;
-import com.sparta.newsfeed.user.dto.UserLoginRequestDto;
 import com.sparta.newsfeed.user.dto.request.UserCreateRequestDto;
+import com.sparta.newsfeed.user.dto.request.UserDeleteRquestDto;
+import com.sparta.newsfeed.user.dto.request.UserLoginRequestDto;
 import com.sparta.newsfeed.user.entity.User;
 import com.sparta.newsfeed.user.repository.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,18 +40,19 @@ public class UserService {
     return token;
   }
 
-  public String getUserId(HttpServletRequest request) {
-    String token = jwtUtil.getJwtFromHeader(request);
-    String userId = jwtUtil.getUserIdFromToken(token);
-    return userId;
-  }
+  //테스트용 남겨두기
+//  public String getUserId(HttpServletRequest request) {
+//    String token = jwtUtil.getJwtFromHeader(request);
+//    String userId = jwtUtil.getUserIdFromToken(token);
+//    return userId;
+//  }
 
   @Transactional
   public void deleteUser(Long userId, UserDeleteRquestDto request) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 입니다"));
 
-    if(user.isEnabled()) {
+    if (user.isEnabled()) {
       throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
     }
 
