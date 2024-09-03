@@ -26,5 +26,5 @@ public class User {
     private String password;
 
 
-    private List<User> friends;
+    //private List<User> friends;
 }

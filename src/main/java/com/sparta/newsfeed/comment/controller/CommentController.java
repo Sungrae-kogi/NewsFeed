@@ -3,6 +3,8 @@ package com.sparta.newsfeed.comment.controller;
 import com.sparta.newsfeed.comment.dto.CommentRequestDto;
 import com.sparta.newsfeed.comment.dto.CommentResponseDto;
 import com.sparta.newsfeed.comment.service.CommentService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +17,8 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("/{postId}")
-    public ResponseEntity<CommentResponseDto> createComment(@PathVariable Long postId, @RequestBody CommentRequestDto commentRequestDto) {
-        return ResponseEntity.ok(commentService.createComment(postId, commentRequestDto));
+    public ResponseEntity<CommentResponseDto> createComment(@PathVariable Long postId, HttpServletRequest request, @RequestBody CommentRequestDto commentRequestDto) {
+        return ResponseEntity.ok(commentService.createComment(postId, request, commentRequestDto));
     }
 
     @GetMapping("/{commentId}")

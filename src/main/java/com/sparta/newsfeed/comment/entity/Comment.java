@@ -7,11 +7,13 @@ import com.sparta.newsfeed.post.entity.Post;
 import com.sparta.newsfeed.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor
 @Table(name = "comments")
 public class Comment extends Timestamped {
     @Id
@@ -29,7 +31,7 @@ public class Comment extends Timestamped {
     @JoinColumn(name= "post_id")
     private Post post;
 
-    private List<CommentLike> likes;
+    //private List<CommentLike> likes;
 
     public Comment(CommentRequestDto commentRequestDto, User user, Post post){
         this.content = commentRequestDto.getContent();
