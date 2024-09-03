@@ -1,6 +1,8 @@
 package com.sparta.newsfeed.follow.service;
 
 import com.sparta.newsfeed.common.config.JwtUtil;
+import com.sparta.newsfeed.common.exception.ApplicationException;
+import com.sparta.newsfeed.common.exception.ErrorCode;
 import com.sparta.newsfeed.follow.entity.Follow;
 import com.sparta.newsfeed.follow.repository.FollowRepository;
 import com.sparta.newsfeed.user.entity.User;
@@ -19,18 +21,33 @@ public class FollowService {
 
     public void followUser(Long requesterId, HttpServletRequest request) {
         User requester = userRepository.findById(requesterId)
-            .orElseThrow(() -> new IllegalArgumentException("해당 회원이 없습니다"));
+            .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
         Long receiverId = getUserId(request);
 
         User receiver = userRepository.findById(receiverId)
-            .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 유저입니다"));
+            .orElseThrow(() -> new ApplicationException(ErrorCode.BAD_REQUEST));
 
         if (requesterId == receiverId) {
-            throw new IllegalArgumentException("본인은 팔로우할 수 없습니다.");
+            throw new ApplicationException(ErrorCode.BAD_REQUEST);
         }
 
         followRepository.save(new Follow(requester, receiver));
+    }
+
+    public void unFollowUser(Long requesterId, HttpServletRequest request) {
+        User requester = userRepository.findById(requesterId)
+            .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
+
+        Long receiverId = getUserId(request);
+
+        User receiver = userRepository.findById(receiverId)
+            .orElseThrow(() -> new ApplicationException(ErrorCode.BAD_REQUEST));
+
+        Follow follow = followRepository.findByRequesterAndReceiver(requester, receiver)
+            .orElseThrow(() -> new ApplicationException(ErrorCode.FOLLOW_NOT_FOUND));
+
+        followRepository.delete(follow);
     }
 
     public Long getUserId(HttpServletRequest request) {
