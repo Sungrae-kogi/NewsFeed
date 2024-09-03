@@ -7,7 +7,6 @@ import lombok.Getter;
 
 @Entity
 @Getter
-@Table(name = "commentlikes")
 public class CommentLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
