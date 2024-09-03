@@ -17,7 +17,7 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-    private String name;
+    private String nickname;
 
     @Column(nullable = false)
     private String introduction;
