@@ -24,11 +24,9 @@ public class FollowService {
             .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
         Long receiverId = getUserId(request);
+        User receiver = getReceiver(request);
 
-        User receiver = userRepository.findById(receiverId)
-            .orElseThrow(() -> new ApplicationException(ErrorCode.BAD_REQUEST));
-
-        if (requesterId == receiverId) {
+        if (requesterId.equals(receiverId)) {
             throw new ApplicationException(ErrorCode.BAD_REQUEST);
         }
 
@@ -39,10 +37,7 @@ public class FollowService {
         User requester = userRepository.findById(requesterId)
             .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
-        Long receiverId = getUserId(request);
-
-        User receiver = userRepository.findById(receiverId)
-            .orElseThrow(() -> new ApplicationException(ErrorCode.BAD_REQUEST));
+        User receiver = getReceiver(request);
 
         Follow follow = followRepository.findByRequesterAndReceiver(requester, receiver)
             .orElseThrow(() -> new ApplicationException(ErrorCode.FOLLOW_NOT_FOUND));
@@ -54,5 +49,14 @@ public class FollowService {
         String token = jwtUtil.getJwtFromHeader(request);
         Long userId = jwtUtil.getUserIdFromToken(token);
         return userId;
+    }
+
+    private User getReceiver(HttpServletRequest request) {
+        Long receiverId = getUserId(request);
+
+        User receiver = userRepository.findById(receiverId)
+            .orElseThrow(() -> new ApplicationException(ErrorCode.BAD_REQUEST));
+
+        return receiver;
     }
 }
