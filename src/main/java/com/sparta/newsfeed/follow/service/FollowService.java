@@ -10,6 +10,7 @@ import com.sparta.newsfeed.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +20,7 @@ public class FollowService {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
 
+    @Transactional
     public void followUser(Long requesterId, HttpServletRequest request) {
         User requester = userRepository.findById(requesterId)
             .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
@@ -33,6 +35,7 @@ public class FollowService {
         followRepository.save(new Follow(requester, receiver));
     }
 
+    @Transactional
     public void unFollowUser(Long requesterId, HttpServletRequest request) {
         User requester = userRepository.findById(requesterId)
             .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
