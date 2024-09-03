@@ -1,14 +1,20 @@
 package com.sparta.newsfeed.user.entity;
 
-import jakarta.persistence.*;
+import com.sparta.newsfeed.user.dto.request.UserUpdateRequestDto;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.AccessLevel;
 import lombok.Getter;
-
-import java.util.List;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "users")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,6 +31,21 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    private boolean isEnabled = false;
 
-    //private List<User> friends;
+    public User(String email, String password, String nickname, String introduction) {
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+        this.introduction = introduction;
+    }
+
+    public void delete() {
+        this.isEnabled = true;
+    }
+
+    public void update(UserUpdateRequestDto requestDto) {
+        this.nickname = requestDto.getNickname();
+        this.introduction = requestDto.getIntroduction();
+    }
 }

@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class UserCreateRequestDto {
-  @Email(message = "이메일 형식이 incorrect합니다")
+  @Email(message = "이메일 형식이 올바르지 않습니다")
   private String email;
   @Pattern(
       regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
