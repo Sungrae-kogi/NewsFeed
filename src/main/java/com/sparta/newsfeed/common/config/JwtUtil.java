@@ -82,7 +82,7 @@ public class JwtUtil {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
-    public String getUserIdFromToken(String token) {
-        return ((String) getUserInfoFromToken(token).getSubject());
+    public Long getUserIdFromToken(String token) {
+        return Long.parseLong(getUserInfoFromToken(token).getSubject());
     }
 }
