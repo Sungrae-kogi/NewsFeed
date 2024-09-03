@@ -1,45 +1,30 @@
 package com.sparta.newsfeed.user.entity;
 
-import com.sparta.newsfeed.common.Timestamped;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import lombok.NoArgsConstructor;
+import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor
 @Table(name = "users")
-public class User extends Timestamped {
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Column(nullable = false, unique = true)
+    private String email;
 
-  @Column(nullable = false, unique = true)
-  private String email;
+    @Column(nullable = false)
+    private String nickname;
 
-  @Column(nullable = false)
-  private String nickname;
+    @Column(nullable = false)
+    private String introduction;
 
-  @Column(nullable = false)
-  private String introduction;
+    @Column(nullable = false)
+    private String password;
 
-  @Column(nullable = false)
-  private String password;
 
-  private boolean isEnabled = false;
-
-//    private List<User> friends;
-
-  public User(String email, String password, String nickname, String introduction) {
-    this.email = email;
-    this.password = password;
-    this.nickname = nickname;
-    this.introduction = introduction;
-  }
-
-  public void delete() {
-    this.isEnabled = true;
-  }
+    //private List<User> friends;
 }

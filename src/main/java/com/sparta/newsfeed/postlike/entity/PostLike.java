@@ -7,7 +7,6 @@ import lombok.Getter;
 
 @Entity
 @Getter
-@Table(name = "postlikes")
 public class PostLike {
 
     @Id

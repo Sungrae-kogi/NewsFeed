@@ -2,7 +2,11 @@ package com.sparta.newsfeed.common.exception;
 
 public enum ErrorCode {
 
-    USER_NOT_FOUND(404, "존재하지 않는 유저입니다.");
+    BAD_REQUEST(400, "잘못된 요청입니다."),
+    COMMENT_NOT_FOUND(404, "존재하지 않는 댓글입니다."),
+    USER_NOT_FOUND(404, "존재하지 않는 유저입니다."),
+    POST_NOT_FOUND(404, "존재하지 않는 게시물입니다.");
+
 
     private final int statusCodee;
     private final String message;
