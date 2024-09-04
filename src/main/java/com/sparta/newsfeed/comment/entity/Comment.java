@@ -36,6 +36,8 @@ public class Comment extends Timestamped {
     @JoinColumn(name = "post_id")
     private Post post;
 
+    private boolean isDeleted = false;
+
     public Comment(final CommentRequestDto commentRequestDto, final User user, final Post post) {
         this.content = commentRequestDto.getContent();
         this.user = user;
@@ -44,5 +46,9 @@ public class Comment extends Timestamped {
 
     public void update(final String content) {
         this.content = content;
+    }
+
+    public void delete() {
+        this.isDeleted = true;
     }
 }
