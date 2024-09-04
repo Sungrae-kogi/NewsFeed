@@ -135,10 +135,9 @@ public class DataInitializer {
         List<Post> posts = postRepository.findAll(Sort.by(Direction.ASC, "id"));
         List<PostLike> postLikes = new ArrayList<>();
 
-        for (int i = 0; i < users.size(); i++) {
-            User user = users.get(i);
-            for (int j = 0; j < posts.size(); j++) {
-                postLikes.add(new PostLike(user, posts.get(j)));
+        for (int i = 0; i < posts.size(); i++) {
+            for (int j = i % 10; j < users.size(); j++) {
+                postLikes.add(new PostLike(users.get(j), posts.get(i)));
             }
         }
 
