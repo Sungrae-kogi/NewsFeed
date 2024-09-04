@@ -24,4 +24,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             final LocalDateTime startDate,
             final LocalDateTime endDate
     );
+
+    List<Post> findAllByUserIdAndIsDeletedIsFalse(Long userId);
 }

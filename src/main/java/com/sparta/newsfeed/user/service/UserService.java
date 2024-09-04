@@ -1,9 +1,16 @@
 package com.sparta.newsfeed.user.service;
 
+import com.sparta.newsfeed.comment.entity.Comment;
+import com.sparta.newsfeed.comment.repository.CommentRepository;
+import com.sparta.newsfeed.commentlike.repository.CommentLikeRepository;
 import com.sparta.newsfeed.common.config.JwtUtil;
 import com.sparta.newsfeed.common.config.PasswordEncoder;
 import com.sparta.newsfeed.common.exception.ApplicationException;
 import com.sparta.newsfeed.common.exception.ErrorCode;
+import com.sparta.newsfeed.follow.repository.FollowRepository;
+import com.sparta.newsfeed.post.entity.Post;
+import com.sparta.newsfeed.post.repository.PostRepository;
+import com.sparta.newsfeed.postlike.repository.PostLikeRepository;
 import com.sparta.newsfeed.user.dto.request.UserCreateRequestDto;
 import com.sparta.newsfeed.user.dto.request.UserDeleteRquestDto;
 import com.sparta.newsfeed.user.dto.request.UserLoginRequestDto;
@@ -12,6 +19,7 @@ import com.sparta.newsfeed.user.dto.response.UserResponseDto;
 import com.sparta.newsfeed.user.entity.User;
 import com.sparta.newsfeed.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,8 +30,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PostRepository postRepository;
+    private final PostLikeRepository postLikeRepository;
+    private final CommentRepository commentRepository;
+    private final CommentLikeRepository commentLikeRepository;
+    private final FollowRepository followRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+
 
     @Transactional
     public void createUser(UserCreateRequestDto request) {
@@ -66,6 +80,14 @@ public class UserService {
         }
 
         user.delete();
+        List<Post> postList = postRepository.findAllByUserIdAndIsDeletedIsFalse(userId);
+        postList.forEach(Post::delete);
+        List<Comment> commentList = commentRepository.findAllByUserIdAndIsDeletedIsFalse(userId);
+        commentList.forEach(Comment::delete);
+        commentLikeRepository.deleteAllByUserId(user.getId());
+        postLikeRepository.deleteAllByUserId(user.getId());
+        followRepository.deleteAllByRequesterId(user.getId());
+        followRepository.deleteAllByReceiverId(user.getId());
     }
 
     @Transactional
