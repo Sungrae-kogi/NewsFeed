@@ -1,14 +1,17 @@
 package com.sparta.newsfeed.user.entity;
 
+import com.sparta.newsfeed.common.Timestamped;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import java.util.List;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor
 @Table(name = "users")
-public class User {
+public class User extends Timestamped {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,6 +28,16 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    private boolean isEnabled = false;
 
-    //private List<User> friends;
+    public User(String email, String password, String nickname, String introduction) {
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+        this.introduction = introduction;
+    }
+
+    public void delete() {
+        this.isEnabled = true;
+    }
 }
