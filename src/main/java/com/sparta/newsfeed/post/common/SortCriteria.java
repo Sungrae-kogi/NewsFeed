@@ -1,4 +1,4 @@
-package com.sparta.newsfeed.post;
+package com.sparta.newsfeed.post.common;
 
 import com.sparta.newsfeed.common.exception.ApplicationException;
 import com.sparta.newsfeed.common.exception.ErrorCode;
@@ -25,7 +25,7 @@ public enum SortCriteria {
 
     public static SortCriteria findBySort(final String sort) {
         return Arrays.stream(SortCriteria.values())
-                .filter(criteria -> criteria.sort.equals(sort))
+                .filter(criteria -> criteria.name.equals(sort))
                 .findFirst()
                 .orElseThrow(() -> new ApplicationException(ErrorCode.UNSUPPORTED_SORT_CRITERIA));
     }

@@ -1,8 +1,7 @@
 package com.sparta.newsfeed.post.controller;
 
-import com.sparta.newsfeed.common.exception.ApplicationException;
-import com.sparta.newsfeed.common.exception.ErrorCode;
-import com.sparta.newsfeed.post.SortCriteria;
+import com.sparta.newsfeed.common.config.JwtUtil;
+import com.sparta.newsfeed.post.common.SortCriteria;
 import com.sparta.newsfeed.post.dto.request.PostCreateRequestDto;
 import com.sparta.newsfeed.post.dto.request.PostEditRequestDto;
 import com.sparta.newsfeed.post.dto.response.PostResponseDto;
@@ -10,6 +9,7 @@ import com.sparta.newsfeed.post.service.PostService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -33,10 +33,12 @@ public class PostController {
     public static final int DEFAULT_PAGE_SIZE = 10;
 
     private final PostService postService;
+    private final JwtUtil jwtUtil;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/posts")
-    public void createPost(@Valid @RequestBody final PostCreateRequestDto postCreateRequestDto,
+    public void createPost(
+            @Valid @RequestBody final PostCreateRequestDto postCreateRequestDto,
             final HttpServletRequest httpServletRequest
     ) {
         long userId = getUserIdFromServletRequestOrThrow(httpServletRequest);
@@ -51,8 +53,10 @@ public class PostController {
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/posts/{postId}")
-    public void editPost(@PathVariable final long postId,
-            @Valid @RequestBody final PostEditRequestDto postEditRequestDto) {
+    public void editPost(
+            @PathVariable final long postId,
+            @Valid @RequestBody final PostEditRequestDto postEditRequestDto
+    ) {
         postService.editPost(postId, postEditRequestDto);
     }
 
@@ -68,11 +72,9 @@ public class PostController {
             @RequestParam(defaultValue = "0") final int pageNumber,
             @RequestParam(defaultValue = "recentCreatedDate") final String sort,
             @RequestParam(defaultValue = "2000-01-01") final String startDate,
-            @RequestParam String endDate
+            @RequestParam(defaultValue = "2100-01-01") String endDate,
+            final HttpServletRequest httpServletRequest
     ) {
-        if (endDate == null) {
-            endDate = LocalDate.now().toString();
-        }
         SortCriteria sortCriteria = SortCriteria.findBySort(sort);
         PageRequest pageRequest = PageRequest.of(
                 pageNumber,
@@ -81,14 +83,15 @@ public class PostController {
                 sortCriteria.getSort()
         );
 
-        return postService.getPosts(pageRequest, startDate, endDate);
+        Long userId = getUserIdFromServletRequestOrThrow(httpServletRequest);
+
+        LocalDate startLocalDate = LocalDate.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        LocalDate endLocalDate = LocalDate.parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        return postService.getNewsfeed(userId, pageRequest, startLocalDate.atStartOfDay(), endLocalDate.atStartOfDay());
     }
 
     private long getUserIdFromServletRequestOrThrow(final HttpServletRequest httpServletRequest) {
-        Object userIdAttribute = httpServletRequest.getAttribute("userId");
-        if (userIdAttribute instanceof Long) {
-            return (long) userIdAttribute;
-        }
-        throw new ApplicationException(ErrorCode.BAD_REQUEST);
+        return jwtUtil.getUserIdFromToken(jwtUtil.getJwtFromHeader(httpServletRequest));
     }
 }
