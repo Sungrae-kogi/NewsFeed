@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/postlikes")
+@RequestMapping("/api/v1")
 public class PostLikeController {
     private final PostLikeService postLikeService;
 
-    @ResponseStatus(HttpStatus.OK)
-    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/postlikes")
     public void postLike(HttpServletRequest request, @RequestBody PostLikeRequestDto postLikeRequestDto) {
         postLikeService.postLike(request, postLikeRequestDto);
     }
