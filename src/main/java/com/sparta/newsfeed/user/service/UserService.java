@@ -39,7 +39,7 @@ public class UserService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
-        if (user.isEnabled()) {
+        if (user.isDeleted()) {
             throw new ApplicationException(ErrorCode.USER_NOT_FOUND);
         }
 
@@ -57,7 +57,7 @@ public class UserService {
 
         User user = userCheck(request, userId);
 
-        if (user.isEnabled()) {
+        if (user.isDeleted()) {
             throw new ApplicationException(ErrorCode.USER_NOT_FOUND);
         }
 
@@ -97,7 +97,7 @@ public class UserService {
         User currentUser = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
-        if (currentUser.isEnabled()) {
+        if (currentUser.isDeleted()) {
             throw new ApplicationException(ErrorCode.USER_NOT_FOUND);
         }
 

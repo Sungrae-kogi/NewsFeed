@@ -3,6 +3,7 @@ package com.sparta.newsfeed.post.service;
 import com.sparta.newsfeed.comment.dto.response.CommentResponseDto;
 import com.sparta.newsfeed.comment.entity.Comment;
 import com.sparta.newsfeed.comment.repository.CommentRepository;
+import com.sparta.newsfeed.commentlike.repository.CommentLikeRepository;
 import com.sparta.newsfeed.common.exception.ApplicationException;
 import com.sparta.newsfeed.common.exception.ErrorCode;
 import com.sparta.newsfeed.follow.repository.FollowRepository;
@@ -34,10 +35,11 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final FollowRepository followRepository;
     private final PostLikeRepository postLikeRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     @Transactional
     public void createPost(final long userId, final PostCreateRequestDto postCreateRequestDto) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndIsDeletedIsFalse(userId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
         postRepository.save(Post.of(user, postCreateRequestDto));
@@ -47,7 +49,7 @@ public class PostService {
         Post post = postRepository.findByIdAndIsDeletedIsFalse(postId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.POST_NOT_FOUND));
 
-        List<Comment> comments = commentRepository.findAllByPostId(post.getId());
+        List<Comment> comments = commentRepository.findAllByPostIdAndIsDeletedIsFalse(post.getId());
         List<CommentResponseDto> commentResponseDtos = comments.stream()
                 .map(CommentResponseDto::new)
                 .toList();
@@ -69,6 +71,15 @@ public class PostService {
     public void deletePost(final long postId) {
         Post post = postRepository.findByIdAndIsDeletedIsFalse(postId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.POST_NOT_FOUND));
+
+        List<Comment> comments = commentRepository.findAllByPostIdAndIsDeletedIsFalse(postId);
+        List<Long> commentIds = comments.stream()
+                .map(Comment::getId)
+                .toList();
+
+        commentLikeRepository.deleteAllByCommentIdIn(commentIds);
+        postLikeRepository.deleteAllByPostId(post.getId());
+        comments.forEach(Comment::delete);
         post.delete();
     }
 
@@ -91,7 +102,7 @@ public class PostService {
 
         List<PostResponseDto> postResponseDtos = new ArrayList<>();
         for (Post post : posts) {
-            List<CommentResponseDto> commentsResponseDtos = commentRepository.findAllByPostId(post.getId()).stream()
+            List<CommentResponseDto> commentsResponseDtos = commentRepository.findAllByPostIdAndIsDeletedIsFalse(post.getId()).stream()
                     .map(CommentResponseDto::new)
                     .toList();
             int likeCount = postLikeRepository.countByPostId(post.getId());
@@ -125,7 +136,7 @@ public class PostService {
 
         List<PostResponseDto> postResponseDtos = new ArrayList<>();
         for (Post post : posts) {
-            List<CommentResponseDto> commentsResponseDtos = commentRepository.findAllByPostId(post.getId()).stream()
+            List<CommentResponseDto> commentsResponseDtos = commentRepository.findAllByPostIdAndIsDeletedIsFalse(post.getId()).stream()
                     .map(CommentResponseDto::new)
                     .toList();
             int likeCount = postLikeRepository.countByPostId(post.getId());

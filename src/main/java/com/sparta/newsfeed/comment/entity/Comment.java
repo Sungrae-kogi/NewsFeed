@@ -47,4 +47,8 @@ public class Comment extends Timestamped {
     public void update(final String content) {
         this.content = content;
     }
+
+    public void delete() {
+        this.isDeleted = true;
+    }
 }

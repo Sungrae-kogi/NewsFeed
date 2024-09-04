@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    List<Comment> findAllByPostId(final Long postId);
+    List<Comment> findAllByPostIdAndIsDeletedIsFalse(final Long postId);
 }
