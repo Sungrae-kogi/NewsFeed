@@ -17,7 +17,6 @@ import com.sparta.newsfeed.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -130,7 +129,7 @@ public class PostService {
                     .map(CommentResponseDto::new)
                     .toList();
             int likeCount = postLikeRepository.countByPostId(post.getId());
-            postResponseDtos.add(new PostResponseDto(post, likeCount ,commentsResponseDtos));
+            postResponseDtos.add(new PostResponseDto(post, likeCount, commentsResponseDtos));
         }
 
         return postResponseDtos;

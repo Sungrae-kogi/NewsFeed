@@ -1,17 +1,24 @@
 package com.sparta.newsfeed.user.controller;
 
-import com.sparta.newsfeed.user.dto.response.UserResponseDto;
 import com.sparta.newsfeed.user.dto.request.UserCreateRequestDto;
 import com.sparta.newsfeed.user.dto.request.UserDeleteRquestDto;
 import com.sparta.newsfeed.user.dto.request.UserLoginRequestDto;
 import com.sparta.newsfeed.user.dto.request.UserUpdateRequestDto;
+import com.sparta.newsfeed.user.dto.response.UserResponseDto;
 import com.sparta.newsfeed.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,33 +58,32 @@ public class UserController {
      */
     @DeleteMapping("/users/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId,
-        @RequestBody UserDeleteRquestDto requestDto, HttpServletRequest request) {
+            @RequestBody UserDeleteRquestDto requestDto, HttpServletRequest request) {
         userService.deleteUser(userId, requestDto, request);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-  /**
-   * 유저를 수정합니다
-   * @param userId 수정할 유저 아이디를 받습니다
-   * @param requestDto
-   * @param request
-   * @return
-   */
-  @PutMapping("/users/{userId}")
-    public ResponseEntity<Void> updateUser(@PathVariable Long userId,
-        @RequestBody UserUpdateRequestDto requestDto, HttpServletRequest request) {
+    /**
+     * 유저를 수정합니다
+     *
+     * @param userId     수정할 유저 아이디를 받습니다
+     * @param requestDto
+     * @param request
+     * @return
+     */
+    @PutMapping("/users/{userId}")
+    public ResponseEntity<Void> updateUser(
+            @PathVariable Long userId,
+            @RequestBody UserUpdateRequestDto requestDto,
+            HttpServletRequest request
+    ) {
         userService.updateUser(userId, requestDto, request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/users/{userId}")
-    public ResponseEntity<UserResponseDto>
-    getUser(@PathVariable Long userId,
-            HttpServletRequest request) {
-        UserResponseDto userResponseDto =
-                userService.getUser(userId, request);
-        return new ResponseEntity<>(userResponseDto,
-                HttpStatus.OK);
-
-        }
+    public ResponseEntity<UserResponseDto> getUser(@PathVariable Long userId, HttpServletRequest request) {
+        UserResponseDto userResponseDto = userService.getUser(userId, request);
+        return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
+}

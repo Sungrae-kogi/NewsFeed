@@ -1,7 +1,6 @@
 package com.sparta.newsfeed.user.entity;
 
 import com.sparta.newsfeed.common.Timestamped;
-import com.sparta.newsfeed.user.dto.request.UserUpdateRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

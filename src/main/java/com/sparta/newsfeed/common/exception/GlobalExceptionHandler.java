@@ -21,7 +21,8 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.of(statusCode, message);
 
         for (FieldError fieldError : e.getBindingResult().getFieldErrors()) {
-            log.error("{} - {} : {}", e.getClass().getSimpleName(), fieldError.getField(), fieldError.getDefaultMessage());
+            log.error("{} - {} : {}", e.getClass().getSimpleName(), fieldError.getField(),
+                    fieldError.getDefaultMessage());
             errorResponse.addValidation(fieldError.getField(), fieldError.getDefaultMessage());
         }
 

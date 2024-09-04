@@ -4,21 +4,29 @@ import com.sparta.newsfeed.comment.dto.CommentRequestDto;
 import com.sparta.newsfeed.comment.dto.CommentResponseDto;
 import com.sparta.newsfeed.comment.service.CommentService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/comments")
 public class CommentController {
+
     private final CommentService commentService;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{postId}")
-    public void createComment(@PathVariable Long postId, HttpServletRequest request, @RequestBody CommentRequestDto commentRequestDto) {
+    public void createComment(@PathVariable Long postId, HttpServletRequest request,
+            @RequestBody CommentRequestDto commentRequestDto) {
         commentService.createComment(postId, request, commentRequestDto);
     }
 
@@ -31,7 +39,8 @@ public class CommentController {
     // 댓글의 수정은 댓글의 작성자 혹은 게시글의 작성자만 가능. 사용자 정보, 게시글 정보
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{commentId}")
-    public void updateComment(HttpServletRequest request, @PathVariable Long commentId, @RequestBody CommentRequestDto commentRequestDto) {
+    public void updateComment(HttpServletRequest request, @PathVariable Long commentId,
+            @RequestBody CommentRequestDto commentRequestDto) {
         commentService.updateComment(request, commentId, commentRequestDto);
     }
 

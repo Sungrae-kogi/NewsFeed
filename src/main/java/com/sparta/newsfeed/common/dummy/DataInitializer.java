@@ -37,12 +37,6 @@ public class DataInitializer {
     private final PostRepository postRepository;
     private final PasswordEncoder passwordEncoder;
 
-    /**
-     * 유저 10명
-     * 1번 유저 -> 2 ~ 10번 팔로우, 2번 유저 -> 3 ~ 10번 팔로우, 3번 유저 -> 4 ~ 10번 팔로우 ...
-     * 각 유저별 포스트 10개
-     */
-
     @EventListener(ApplicationReadyEvent.class)
     @Transactional
     public void init() {
@@ -60,7 +54,7 @@ public class DataInitializer {
         for (int i = 1; i < 11; i++) {
             User user = new User(
                     "test" + i + "@test.com",
-                    passwordEncoder.encode( "Password!" + i),
+                    passwordEncoder.encode("Password!" + i),
                     "testNickname" + i,
                     "testIntroduction" + i
             );
