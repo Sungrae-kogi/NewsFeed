@@ -15,14 +15,16 @@ public class PostResponseDto {
     private final String nickname;
     private final String content;
     private final LocalDateTime createdAt;
+    private final int likeCount;
     private final List<CommentResponseDto> comments = new ArrayList<>();
 
-    public PostResponseDto(final Post post, final List<CommentResponseDto> commentResponseDtos) {
+    public PostResponseDto(final Post post, final int likeCount, final List<CommentResponseDto> commentResponseDtos) {
         this.postId = post.getId();
         this.title = post.getTitle();
         this.nickname = post.getUser().getNickname();
         this.content = post.getContent();
-        this.comments.addAll(commentResponseDtos);
         this.createdAt = post.getCreatedAt();
+        this.likeCount = likeCount;
+        this.comments.addAll(commentResponseDtos);
     }
 }

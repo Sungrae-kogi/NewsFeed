@@ -11,11 +11,13 @@ import com.sparta.newsfeed.post.dto.request.PostEditRequestDto;
 import com.sparta.newsfeed.post.dto.response.PostResponseDto;
 import com.sparta.newsfeed.post.entity.Post;
 import com.sparta.newsfeed.post.repository.PostRepository;
+import com.sparta.newsfeed.postlike.repository.PostLikeRepository;
 import com.sparta.newsfeed.user.entity.User;
 import com.sparta.newsfeed.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,6 +34,7 @@ public class PostService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final FollowRepository followRepository;
+    private final PostLikeRepository postLikeRepository;
 
     @Transactional
     public void createPost(final long userId, final PostCreateRequestDto postCreateRequestDto) {
@@ -42,20 +45,21 @@ public class PostService {
     }
 
     public PostResponseDto getPost(final long postId) {
-        Post post = postRepository.findById(postId)
+        Post post = postRepository.findByIdAndIsDeletedIsFalse(postId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.POST_NOT_FOUND));
 
-        List<Comment> comments = commentRepository.findAllByUser_Id(post.getId());
+        List<Comment> comments = commentRepository.findAllByPostId(post.getId());
         List<CommentResponseDto> commentResponseDtos = comments.stream()
                 .map(CommentResponseDto::new)
                 .toList();
+        int likeCount = postLikeRepository.countByPostId(post.getId());
 
-        return new PostResponseDto(post, commentResponseDtos);
+        return new PostResponseDto(post, likeCount, commentResponseDtos);
     }
 
     @Transactional
     public void editPost(final long postId, @Valid PostEditRequestDto postEditRequestDto) {
-        Post post = postRepository.findById(postId)
+        Post post = postRepository.findByIdAndIsDeletedIsFalse(postId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.POST_NOT_FOUND));
 
         post.changeTitle(postEditRequestDto.getTitle());
@@ -64,14 +68,45 @@ public class PostService {
 
     @Transactional
     public void deletePost(final long postId) {
-        if (postRepository.existsById(postId)) {
-            postRepository.deleteById(postId);
-            return;
-        }
-        throw new ApplicationException(ErrorCode.POST_NOT_FOUND);
+        Post post = postRepository.findByIdAndIsDeletedIsFalse(postId)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.POST_NOT_FOUND));
+        post.delete();
     }
 
-    public List<PostResponseDto> getNewsfeed(
+    public List<PostResponseDto> getNewsfeedOrderByLikeCountDesc(
+            final Long userId,
+            final int pageNumber,
+            final LocalDateTime startDate,
+            final LocalDateTime endDate
+    ) {
+        List<Long> followReceiverIds = followRepository.findAllByRequesterId(userId)
+                .stream()
+                .map(follow -> follow.getReceiver().getId())
+                .toList();
+
+        List<Post> posts = postRepository.findAllByUserIdInAndCreatedAtAfterAndCreatedAtBeforeAndIsDeletedIsFalse(
+                followReceiverIds,
+                startDate,
+                endDate
+        );
+
+        List<PostResponseDto> postResponseDtos = new ArrayList<>();
+        for (Post post : posts) {
+            List<CommentResponseDto> commentsResponseDtos = commentRepository.findAllByPostId(post.getId()).stream()
+                    .map(CommentResponseDto::new)
+                    .toList();
+            int likeCount = postLikeRepository.countByPostId(post.getId());
+            postResponseDtos.add(new PostResponseDto(post, likeCount, commentsResponseDtos));
+        }
+
+        return postResponseDtos.stream()
+                .sorted((o1, o2) -> o2.getLikeCount() - o1.getLikeCount())
+                .skip(10 * pageNumber)
+                .limit(10)
+                .toList();
+    }
+
+    public List<PostResponseDto> getNewsfeedOrderByDateDesc(
             final Long userId,
             final PageRequest pageRequest,
             final LocalDateTime startDate,
@@ -82,7 +117,7 @@ public class PostService {
                 .map(follow -> follow.getReceiver().getId())
                 .toList();
 
-        Page<Post> posts = postRepository.findAllByUserIdInAndCreatedAtAfterAndCreatedAtBefore(
+        Page<Post> posts = postRepository.findAllByUserIdInAndCreatedAtAfterAndCreatedAtBeforeAndIsDeletedIsFalse(
                 followReceiverIds,
                 startDate,
                 endDate,
@@ -91,10 +126,11 @@ public class PostService {
 
         List<PostResponseDto> postResponseDtos = new ArrayList<>();
         for (Post post : posts) {
-            List<CommentResponseDto> commentsResponseDtos = commentRepository.findAllByPost_Id(post.getId()).stream()
+            List<CommentResponseDto> commentsResponseDtos = commentRepository.findAllByPostId(post.getId()).stream()
                     .map(CommentResponseDto::new)
                     .toList();
-            postResponseDtos.add(new PostResponseDto(post, commentsResponseDtos));
+            int likeCount = postLikeRepository.countByPostId(post.getId());
+            postResponseDtos.add(new PostResponseDto(post, likeCount ,commentsResponseDtos));
         }
 
         return postResponseDtos;
