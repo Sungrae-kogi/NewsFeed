@@ -41,6 +41,8 @@ public class PostLikeService {
             // 좋아요 등록
             PostLike postLike = new PostLike(user, post);
             postLikeRepository.save(postLike);
+        }else{
+            throw new ApplicationException(ErrorCode.POST_ALREADY_LIKED);
         }
     }
 
