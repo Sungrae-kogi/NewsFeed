@@ -4,6 +4,8 @@ public enum ErrorCode {
 
     BAD_REQUEST(400, "잘못된 요청입니다."),
     UNSUPPORTED_SORT_CRITERIA(400, "지원하지 않는 정렬 기준입니다."),
+    USER_CANNOTUPDATE_COMMENT(404, "댓글 수정 권한이 없습니다."),
+    USER_CANNOTDELETE_COMMENT(404, "댓글 삭제 권한이 없습니다."),
     USER_CANNOTLIKE_OWNCOMMENT(404, "유저는 본인의 댓글에 좋아요를 누를 수 없습니다."),
     USER_CANNOTLIKE_OWNPOST(404, "유저는 본인의 게시물에 좋아요를 누를 수 없습니다."),
 

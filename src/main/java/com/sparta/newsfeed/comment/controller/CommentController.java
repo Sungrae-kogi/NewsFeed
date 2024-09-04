@@ -31,14 +31,14 @@ public class CommentController {
     // 댓글의 수정은 댓글의 작성자 혹은 게시글의 작성자만 가능. 사용자 정보, 게시글 정보
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{commentId}")
-    public void updateComment(@PathVariable Long commentId, @RequestBody CommentRequestDto commentRequestDto) {
-        commentService.updateComment(commentId, commentRequestDto);
+    public void updateComment(HttpServletRequest request, @PathVariable Long commentId, @RequestBody CommentRequestDto commentRequestDto) {
+        commentService.updateComment(request, commentId, commentRequestDto);
     }
 
     //댓글의 삭제는 댓글의 작성자 혹은 게시글의 작성자만 가능.
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{commentId}")
-    public void deleteComment(@PathVariable Long commentId) {
-        commentService.deleteComment(commentId);
+    public void deleteComment(HttpServletRequest request, @PathVariable Long commentId) {
+        commentService.deleteComment(request, commentId);
     }
 }
