@@ -5,16 +5,20 @@ import com.sparta.newsfeed.commentlike.entity.CommentLike;
 import com.sparta.newsfeed.common.Timestamped;
 import com.sparta.newsfeed.post.entity.Post;
 import com.sparta.newsfeed.user.entity.User;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "comments")
 public class Comment extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +34,7 @@ public class Comment extends Timestamped {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name= "post_id")
     private Post post;
-
+  
     //private List<CommentLike> likes;
 
     public Comment(CommentRequestDto commentRequestDto, User user, Post post){

@@ -1,7 +1,18 @@
 package com.sparta.newsfeed.post.repository;
 
 import com.sparta.newsfeed.post.entity.Post;
+import java.time.LocalDateTime;
+import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
+
+    Page<Post> findAllByUserIdInAndCreatedAtAfterAndCreatedAtBefore(
+            final List<Long> userIds,
+            final LocalDateTime startDate,
+            final LocalDateTime endDate,
+            final PageRequest pageRequest
+    );
 }
