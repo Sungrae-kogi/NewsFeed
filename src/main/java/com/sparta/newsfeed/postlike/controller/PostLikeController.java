@@ -27,7 +27,7 @@ public class PostLikeController {
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/postlilkes/{postLikeId}")
+    @DeleteMapping("/postlikes/{postLikeId}")
     public void deletePostLike(HttpServletRequest request, @PathVariable Long postLikeId) {
         postLikeService.deletePostLike(request, postLikeId);
     }
