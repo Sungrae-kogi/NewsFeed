@@ -1,5 +1,6 @@
 package com.sparta.newsfeed.user.controller;
 
+import com.sparta.newsfeed.user.dto.response.UserResponseDto;
 import com.sparta.newsfeed.user.dto.request.UserCreateRequestDto;
 import com.sparta.newsfeed.user.dto.request.UserDeleteRquestDto;
 import com.sparta.newsfeed.user.dto.request.UserLoginRequestDto;
@@ -10,13 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -74,4 +69,15 @@ public class UserController {
         userService.updateUser(userId, requestDto, request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-}
+
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<UserResponseDto>
+    getUser(@PathVariable Long userId,
+            HttpServletRequest request) {
+        UserResponseDto userResponseDto =
+                userService.getUser(userId, request);
+        return new ResponseEntity<>(userResponseDto,
+                HttpStatus.OK);
+
+        }
+    }
