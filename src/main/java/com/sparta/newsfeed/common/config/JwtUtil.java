@@ -1,5 +1,7 @@
 package com.sparta.newsfeed.common.config;
 
+import com.sparta.newsfeed.common.exception.ApplicationException;
+import com.sparta.newsfeed.common.exception.ErrorCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -68,7 +70,7 @@ public class JwtUtil {
             logger.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
         } catch (ExpiredJwtException e) {
             logger.error("Expired JWT token, 만료된 JWT token 입니다.");
-            throw e;
+            throw new ApplicationException(ErrorCode.TOKEN_INVALID);
         } catch (UnsupportedJwtException e) {
             logger.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
         } catch (IllegalArgumentException e) {

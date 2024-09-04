@@ -16,6 +16,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CommentLikeService {
@@ -31,16 +34,24 @@ public class CommentLikeService {
         // commentId로 Comment 검색
         Comment comment  = commentRepository.findById(commentLikeRequestDto.getCommentId()).orElseThrow(() -> new ApplicationException(ErrorCode.COMMENT_NOT_FOUND));
 
-        // user가 comment에 좋아요를 한 상태인가?
-        boolean alreadyLiked = commentLikeRepository.existsByUserAndComment(user, comment);
+        // user가 본인이 작성한 comment에 좋아요를 누르려고하는 상황인가?
+        boolean isUserTryingToLikeOwnComment = comment.getUser().getId().equals(user.getId()) ? true : false;
 
-        // 좋아요를 누른 상태가 아니라면
-        if(!alreadyLiked) {
-            // 좋아요 등록
-            CommentLike commentLike = new CommentLike(user, comment);
-            commentLikeRepository.save(commentLike);
+        // 본인의 comment에 좋아요를 누르려 한다면
+        if(isUserTryingToLikeOwnComment) {
+            throw new ApplicationException(ErrorCode.USER_CANNOTLIKE_OWNCOMMENT);
         }else{
-            throw new ApplicationException(ErrorCode.COMMENT_ALREADY_LIKED);
+            // user가 comment에 좋아요를 한 상태인가?
+            boolean alreadyLiked = commentLikeRepository.existsByUserAndComment(user, comment);
+
+            // 좋아요를 누른 상태가 아니라면
+            if(!alreadyLiked) {
+                // 좋아요 등록
+                CommentLike commentLike = new CommentLike(user, comment);
+                commentLikeRepository.save(commentLike);
+            }else{
+                throw new ApplicationException(ErrorCode.COMMENT_ALREADY_LIKED);
+            }
         }
     }
 
@@ -55,6 +66,14 @@ public class CommentLikeService {
         if(commentLike.getUser().getId().equals(user.getId())) {
             commentLikeRepository.delete(commentLike);
         }
+    }
+
+    public int getCommentLikeCount(Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new ApplicationException(ErrorCode.COMMENT_NOT_FOUND));
+
+        List<CommentLike> commentLikes = commentLikeRepository.findByComment(comment);
+
+        return commentLikes.size();
     }
 
     public Long getUserId(HttpServletRequest request)
