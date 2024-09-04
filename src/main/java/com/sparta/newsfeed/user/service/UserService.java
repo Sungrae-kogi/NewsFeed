@@ -77,7 +77,7 @@ public class UserService {
             throw new IllegalArgumentException("권한이 없습니다.");
         }
 
-        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+        if (passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("기존 사용된 비밀번호는 사용할 수 없습니다");
         }
 
