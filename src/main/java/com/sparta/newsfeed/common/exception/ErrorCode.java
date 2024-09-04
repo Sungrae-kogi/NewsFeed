@@ -5,6 +5,8 @@ public enum ErrorCode {
     BAD_REQUEST(400, "잘못된 요청입니다."),
     COMMENT_NOT_FOUND(404, "존재하지 않는 댓글입니다."),
     USER_NOT_FOUND(404, "존재하지 않는 유저입니다."),
+    POST_ALREADY_LIKED(404, "이미 좋아요를 누른 게시물입니다."),
+    COMMENT_ALREADY_LIKED(404, "이미 좋아요를 누른 댓글입니다."),
     POST_NOT_FOUND(404, "존재하지 않는 게시물입니다.");
 
 
