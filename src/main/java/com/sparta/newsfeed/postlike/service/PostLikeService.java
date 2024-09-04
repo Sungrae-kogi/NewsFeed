@@ -1,5 +1,7 @@
 package com.sparta.newsfeed.postlike.service;
 
+import com.sparta.newsfeed.comment.entity.Comment;
+import com.sparta.newsfeed.commentlike.entity.CommentLike;
 import com.sparta.newsfeed.commentlike.repository.CommentLikeRepository;
 import com.sparta.newsfeed.common.config.JwtUtil;
 import com.sparta.newsfeed.common.exception.ApplicationException;
@@ -15,6 +17,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -33,16 +37,24 @@ public class PostLikeService {
         // postId로 Post 검색
         Post post = postRepository.findById(postLikeRequestDto.getPostId()).orElseThrow(() -> new ApplicationException(ErrorCode.POST_NOT_FOUND));
 
-        // user가 post에 좋아요를 한 상태인가?
-        boolean alreadyLiked = postLikeRepository.existsByUserAndPost(user, post);
+        // user가 본인이 작성한 post에 좋아요를 누르려고하는 상황인가?
+        boolean isUserTryingToLikeOwnPost = post.getUser().getId().equals(user.getId()) ? true : false;
 
-        // 좋아요를 누른 상태가 아니라면
-        if(!alreadyLiked) {
-            // 좋아요 등록
-            PostLike postLike = new PostLike(user, post);
-            postLikeRepository.save(postLike);
+        // 본인의 post에 좋아요를 누르려 한다면
+        if(isUserTryingToLikeOwnPost){
+            throw new ApplicationException(ErrorCode.USER_CANNOTLIKE_OWNPOST);
         }else{
-            throw new ApplicationException(ErrorCode.POST_ALREADY_LIKED);
+            // user가 post에 좋아요를 한 상태인가?
+            boolean alreadyLiked = postLikeRepository.existsByUserAndPost(user, post);
+
+            // 좋아요를 누른 상태가 아니라면
+            if(!alreadyLiked) {
+                // 좋아요 등록
+                PostLike postLike = new PostLike(user, post);
+                postLikeRepository.save(postLike);
+            }else{
+                throw new ApplicationException(ErrorCode.POST_ALREADY_LIKED);
+            }
         }
     }
 
@@ -57,6 +69,14 @@ public class PostLikeService {
         if(postLike.getUser().getId().equals(user.getId())) {
             postLikeRepository.delete(postLike);
         }
+    }
+
+    public int getPostLikeCount(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ApplicationException(ErrorCode.POST_NOT_FOUND));
+
+        List<PostLike> postLikes = postLikeRepository.findByPost(post);
+
+        return postLikes.size();
     }
 
     public Long getUserId(HttpServletRequest request)
