@@ -27,8 +27,6 @@ public class UserService {
 
     @Transactional
     public void createUser(UserCreateRequestDto request) {
-        Optional<User> existUser = userRepository.findByEmail(request.getEmail());
-        if (existUser.isPresent()) {throw new ApplicationException(ErrorCode.ALREADY_USER_EXIST);}
 
         String password = passwordEncoder.encode(request.getPassword());
         User user = new User(request.getEmail(), password, request.getNickname(),
@@ -57,13 +55,7 @@ public class UserService {
     public void deleteUser(Long userId, UserDeleteRquestDto requestDto,
         HttpServletRequest request) {
 
-        Long currentUserId = getUserId(request);
-        if (!Objects.equals(userId, currentUserId)) {
-            throw new ApplicationException(ErrorCode.USER_FORBIDDEN);
-        }
-
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
+        User user = userCheck(request, userId);
 
         if (user.isEnabled()) {
             throw new ApplicationException(ErrorCode.USER_NOT_FOUND);
@@ -80,19 +72,7 @@ public class UserService {
     public void updateUser(Long userId, UserUpdateRequestDto requestDto,
         HttpServletRequest request) {
 
-        Long currentUserId = getUserId(request);
-        if (!Objects.equals(userId, currentUserId)) {
-            throw new ApplicationException(ErrorCode.USER_FORBIDDEN);
-        }
-
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
-
-        Long token = getUserId(request);
-
-        if (!userId.equals(token)) {
-            throw new ApplicationException(ErrorCode.USER_FORBIDDEN);
-        }
+        User user = userCheck(request, userId);
 
         if (passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
             throw new ApplicationException(ErrorCode.PASSWORD_SAME_OLD);
@@ -103,9 +83,30 @@ public class UserService {
         user.update(requestDto.getNickname(), requestDto.getIntroduction(), password);
     }
 
+    //jwt에서 현재 유저의 아이디를 반환해줍니다.
     public Long getUserId(HttpServletRequest request) {
         String token = jwtUtil.getJwtFromHeader(request);
         Long userId = jwtUtil.getUserIdFromToken(token);
         return userId;
+    }
+
+    //servlet에서 받아온 user아이디와 입력받은 userid 가 동일한지, check를 하는 로직입니다.
+    private User userCheck(HttpServletRequest request, Long userId) {
+        Long currentUserId = getUserId(request);
+
+        User currentUser = userRepository.findById(currentUserId)
+            .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
+
+        if(currentUser.isEnabled())
+        {
+            throw new ApplicationException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        if (!userId.equals(currentUserId)) {
+            throw new ApplicationException(ErrorCode.USER_FORBIDDEN);
+        }
+
+        return userRepository.findById(userId)
+            .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
     }
 }
