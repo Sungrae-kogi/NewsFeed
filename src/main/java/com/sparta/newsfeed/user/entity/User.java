@@ -1,6 +1,7 @@
 package com.sparta.newsfeed.user.entity;
 
 import com.sparta.newsfeed.common.Timestamped;
+import com.sparta.newsfeed.user.dto.request.UserUpdateRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -42,5 +43,11 @@ public class User extends Timestamped {
 
     public void delete() {
         this.isEnabled = true;
+    }
+
+    public void update(String nickname, String introduction, String password) {
+        this.nickname = nickname;
+        this.introduction = introduction;
+        this.password = password;
     }
 }

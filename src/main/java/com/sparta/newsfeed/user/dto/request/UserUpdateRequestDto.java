@@ -3,7 +3,9 @@ package com.sparta.newsfeed.user.dto.request;
 import lombok.Getter;
 
 @Getter
-public class UserDeleteRquestDto {
+public class UserUpdateRequestDto {
 
+    private String nickname;
+    private String introduction;
     private String password;
 }
