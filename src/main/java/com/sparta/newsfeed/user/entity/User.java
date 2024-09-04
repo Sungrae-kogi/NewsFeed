@@ -1,5 +1,6 @@
 package com.sparta.newsfeed.user.entity;
 
+import com.sparta.newsfeed.common.Timestamped;
 import com.sparta.newsfeed.user.dto.request.UserUpdateRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User {
+public class User extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,8 +45,9 @@ public class User {
         this.isEnabled = true;
     }
 
-    public void update(UserUpdateRequestDto requestDto) {
-        this.nickname = requestDto.getNickname();
-        this.introduction = requestDto.getIntroduction();
+    public void update(String nickname, String introduction, String password) {
+        this.nickname = nickname;
+        this.introduction = introduction;
+        this.password = password;
     }
 }

@@ -2,6 +2,8 @@ package com.sparta.newsfeed.user.service;
 
 import com.sparta.newsfeed.common.config.JwtUtil;
 import com.sparta.newsfeed.common.config.PasswordEncoder;
+import com.sparta.newsfeed.common.exception.ApplicationException;
+import com.sparta.newsfeed.common.exception.ErrorCode;
 import com.sparta.newsfeed.user.dto.request.UserCreateRequestDto;
 import com.sparta.newsfeed.user.dto.request.UserDeleteRquestDto;
 import com.sparta.newsfeed.user.dto.request.UserLoginRequestDto;
@@ -9,6 +11,7 @@ import com.sparta.newsfeed.user.dto.request.UserUpdateRequestDto;
 import com.sparta.newsfeed.user.entity.User;
 import com.sparta.newsfeed.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,8 +26,8 @@ public class UserService {
 
     @Transactional
     public void createUser(UserCreateRequestDto request) {
-        User existUser = userRepository.findByEmail(request.getEmail());
-        if (existUser != null) {throw new IllegalArgumentException("해당 이메일이 이미 있습니다.");}
+        Optional<User> existUser = userRepository.findByEmail(request.getEmail());
+        if (existUser.isPresent()) {throw new ApplicationException(ErrorCode.ALREADY_USER_EXIST);}
 
         String password = passwordEncoder.encode(request.getPassword());
         User user = new User(request.getEmail(), password, request.getNickname(),
@@ -32,12 +35,14 @@ public class UserService {
         userRepository.save(user);
     }
 
+    //TODO 이거부터 예외처리 하기 + FILTER부분 예외처리하기 ㅇㅅㅇ
     @Transactional(readOnly = true)
     public String loginUser(UserLoginRequestDto request) {
-        User user = userRepository.findByEmail(request.getEmail());
+        User user = userRepository.findByEmail(request.getEmail())
+            .orElseThrow(()->new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
-        if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("로그인 실패");
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new ApplicationException(ErrorCode.PASSWORD_NOT_MATCH);
         }
 
         String token = jwtUtil.createToken(user.getId());
@@ -47,14 +52,14 @@ public class UserService {
     @Transactional
     public void deleteUser(Long userId, UserDeleteRquestDto request) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 입니다"));
+            .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
         if (user.isEnabled()) {
-            throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
+            throw new ApplicationException(ErrorCode.USER_NOT_FOUND);
         }
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new ApplicationException(ErrorCode.PASSWORD_NOT_MATCH);
         }
 
         user.delete();
@@ -64,14 +69,20 @@ public class UserService {
     public void updateUser(Long userId, UserUpdateRequestDto requestDto,
         HttpServletRequest request) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalStateException("존재하지 않는 사용자입니다."));
+            .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
         String token = jwtUtil.getJwtFromHeader(request);
 
-        if(userId != jwtUtil.getUserIdFromToken(token)) {
+        if (!userId.equals(jwtUtil.getUserIdFromToken(token))) {
             throw new IllegalArgumentException("권한이 없습니다.");
         }
 
-        user.update(requestDto);
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("기존 사용된 비밀번호는 사용할 수 없습니다");
+        }
+
+        String password = passwordEncoder.encode(requestDto.getPassword());
+
+        user.update(requestDto.getNickname(), requestDto.getIntroduction(), password);
     }
 }
