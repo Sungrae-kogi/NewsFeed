@@ -4,16 +4,15 @@ import com.sparta.newsfeed.common.config.JwtUtil;
 import com.sparta.newsfeed.common.config.PasswordEncoder;
 import com.sparta.newsfeed.common.exception.ApplicationException;
 import com.sparta.newsfeed.common.exception.ErrorCode;
-import com.sparta.newsfeed.user.dto.response.UserResponseDto;
 import com.sparta.newsfeed.user.dto.request.UserCreateRequestDto;
 import com.sparta.newsfeed.user.dto.request.UserDeleteRquestDto;
 import com.sparta.newsfeed.user.dto.request.UserLoginRequestDto;
 import com.sparta.newsfeed.user.dto.request.UserUpdateRequestDto;
+import com.sparta.newsfeed.user.dto.response.UserResponseDto;
 import com.sparta.newsfeed.user.entity.User;
 import com.sparta.newsfeed.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Objects;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,14 +30,14 @@ public class UserService {
 
         String password = passwordEncoder.encode(request.getPassword());
         User user = new User(request.getEmail(), password, request.getNickname(),
-            request.getIntroduction());
+                request.getIntroduction());
         userRepository.save(user);
     }
 
     @Transactional(readOnly = true)
     public String loginUser(UserLoginRequestDto request) {
         User user = userRepository.findByEmail(request.getEmail())
-            .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
         if (user.isEnabled()) {
             throw new ApplicationException(ErrorCode.USER_NOT_FOUND);
@@ -54,7 +53,7 @@ public class UserService {
 
     @Transactional
     public void deleteUser(Long userId, UserDeleteRquestDto requestDto,
-        HttpServletRequest request) {
+            HttpServletRequest request) {
 
         User user = userCheck(request, userId);
 
@@ -71,7 +70,7 @@ public class UserService {
 
     @Transactional
     public void updateUser(Long userId, UserUpdateRequestDto requestDto,
-        HttpServletRequest request) {
+            HttpServletRequest request) {
 
         User user = userCheck(request, userId);
 
@@ -96,10 +95,9 @@ public class UserService {
         Long currentUserId = getUserId(request);
 
         User currentUser = userRepository.findById(currentUserId)
-            .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
-        if(currentUser.isEnabled())
-        {
+        if (currentUser.isEnabled()) {
             throw new ApplicationException(ErrorCode.USER_NOT_FOUND);
         }
 
@@ -108,7 +106,7 @@ public class UserService {
         }
 
         return userRepository.findById(userId)
-            .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
     }
 
     public UserResponseDto getUser(Long userId, HttpServletRequest request) {

@@ -34,6 +34,8 @@ public class Post extends Timestamped {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    private boolean isDeleted = false;
+
     private Post(final String title, final String content, final User user) {
         this.title = title;
         this.content = content;
@@ -50,5 +52,9 @@ public class Post extends Timestamped {
 
     public void changeContent(final String content) {
         this.content = content;
+    }
+
+    public void delete() {
+        this.isDeleted = true;
     }
 }

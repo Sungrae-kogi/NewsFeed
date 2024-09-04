@@ -27,7 +27,7 @@ public class FollowController {
      */
     @PostMapping("/friends/{requesterId}")
     public ResponseEntity<Void> followUser(@PathVariable Long requesterId,
-        HttpServletRequest request) {
+            HttpServletRequest request) {
         followService.followUser(requesterId, request);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -41,7 +41,7 @@ public class FollowController {
      */
     @DeleteMapping("/friends/{requesterId}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long requesterId,
-        HttpServletRequest request) {
+            HttpServletRequest request) {
         followService.unFollowUser(requesterId, request);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

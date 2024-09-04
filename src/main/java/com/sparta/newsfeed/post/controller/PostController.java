@@ -75,20 +75,32 @@ public class PostController {
             @RequestParam(defaultValue = "2100-01-01") String endDate,
             final HttpServletRequest httpServletRequest
     ) {
-        SortCriteria sortCriteria = SortCriteria.findBySort(sort);
-        PageRequest pageRequest = PageRequest.of(
-                pageNumber,
-                DEFAULT_PAGE_SIZE,
-                sortCriteria.getDirection(),
-                sortCriteria.getSort()
-        );
-
         Long userId = getUserIdFromServletRequestOrThrow(httpServletRequest);
 
         LocalDate startLocalDate = LocalDate.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         LocalDate endLocalDate = LocalDate.parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        return postService.getNewsfeed(userId, pageRequest, startLocalDate.atStartOfDay(), endLocalDate.atStartOfDay());
+        SortCriteria sortCriteria = SortCriteria.findBySort(sort);
+        if (sortCriteria.isDateCriteria()) {
+            PageRequest pageRequest = PageRequest.of(
+                    pageNumber,
+                    DEFAULT_PAGE_SIZE,
+                    sortCriteria.getDirection(),
+                    sortCriteria.getSort()
+            );
+
+            return postService.getNewsfeedOrderByDateDesc(
+                    userId,
+                    pageRequest,
+                    startLocalDate.atStartOfDay(),
+                    endLocalDate.atStartOfDay());
+        }
+
+        return postService.getNewsfeedOrderByLikeCountDesc(
+                userId,
+                pageNumber,
+                startLocalDate.atStartOfDay(),
+                endLocalDate.atStartOfDay());
     }
 
     private long getUserIdFromServletRequestOrThrow(final HttpServletRequest httpServletRequest) {

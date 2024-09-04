@@ -23,7 +23,7 @@ public class FollowService {
     @Transactional
     public void followUser(Long requesterId, HttpServletRequest request) {
         User requester = userRepository.findById(requesterId)
-            .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
         Long receiverId = getUserId(request);
         User receiver = getReceiver(request);
@@ -38,12 +38,12 @@ public class FollowService {
     @Transactional
     public void unFollowUser(Long requesterId, HttpServletRequest request) {
         User requester = userRepository.findById(requesterId)
-            .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
         User receiver = getReceiver(request);
 
         Follow follow = followRepository.findByRequesterAndReceiver(requester, receiver)
-            .orElseThrow(() -> new ApplicationException(ErrorCode.FOLLOW_NOT_FOUND));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.FOLLOW_NOT_FOUND));
 
         followRepository.delete(follow);
     }
@@ -58,7 +58,7 @@ public class FollowService {
         Long receiverId = getUserId(request);
 
         User receiver = userRepository.findById(receiverId)
-            .orElseThrow(() -> new ApplicationException(ErrorCode.BAD_REQUEST));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.BAD_REQUEST));
 
         return receiver;
     }
