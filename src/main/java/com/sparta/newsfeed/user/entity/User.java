@@ -31,7 +31,7 @@ public class User extends Timestamped {
     @Column(nullable = false)
     private String password;
 
-    private boolean isEnabled = false;
+    private boolean isDeleted = false;
 
     public User(String email, String password, String nickname, String introduction) {
         this.email = email;
@@ -41,7 +41,7 @@ public class User extends Timestamped {
     }
 
     public void delete() {
-        this.isEnabled = true;
+        this.isDeleted = true;
     }
 
     public void update(String nickname, String introduction, String password) {
