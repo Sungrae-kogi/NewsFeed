@@ -1,5 +1,6 @@
 package com.sparta.newsfeed.comment.entity;
 
+import com.sparta.newsfeed.comment.dto.CommentRequestDto;
 import com.sparta.newsfeed.common.Timestamped;
 import com.sparta.newsfeed.post.entity.Post;
 import com.sparta.newsfeed.user.entity.User;
@@ -34,9 +35,13 @@ public class Comment extends Timestamped {
     @JoinColumn(name= "post_id")
     private Post post;
 
-    public Comment(final String content, final User user, final Post post) {
-        this.content = content;
+    public Comment(final CommentRequestDto commentRequestDto, final User user, final Post post) {
+        this.content = commentRequestDto.getContent();
         this.user = user;
         this.post = post;
+    }
+
+    public void update(final String content) {
+        this.content = content;
     }
 }
