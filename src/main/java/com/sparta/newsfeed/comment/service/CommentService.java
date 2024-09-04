@@ -4,6 +4,7 @@ import com.sparta.newsfeed.comment.dto.CommentRequestDto;
 import com.sparta.newsfeed.comment.dto.CommentResponseDto;
 import com.sparta.newsfeed.comment.entity.Comment;
 import com.sparta.newsfeed.comment.repository.CommentRepository;
+import com.sparta.newsfeed.commentlike.service.CommentLikeService;
 import com.sparta.newsfeed.common.config.JwtUtil;
 import com.sparta.newsfeed.common.exception.ApplicationException;
 import com.sparta.newsfeed.common.exception.ErrorCode;
@@ -23,38 +24,45 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final CommentLikeService commentLikeService;
     private final JwtUtil jwtUtil;
 
     @Transactional
-    public CommentResponseDto createComment(Long postId, HttpServletRequest request, CommentRequestDto commentRequestDto) {
+    public void createComment(Long postId, HttpServletRequest request, CommentRequestDto commentRequestDto) {
         // 댓글을 작성할 Post 검색
         Post post = findPost(postId);
 
+        // 댓글을 작성하는 User 검색
         User user = userRepository.findById(getUserId(request)).orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
-        Comment savedComment = commentRepository.save(new Comment(commentRequestDto, user,post));
+        // 댓글 저장
+        commentRepository.save(new Comment(commentRequestDto, user,post));
 
-        return new CommentResponseDto(savedComment);
     }
 
     @Transactional
     public CommentResponseDto getComment(Long commentId) {
         Comment comment = findComment(commentId);
-        return new CommentResponseDto(comment);
+
+        int likeCount = commentLikeService.getCommentLikeCount(comment.getId());
+
+        return new CommentResponseDto(comment, likeCount);
     }
 
     @Transactional
-    public CommentResponseDto updateComment(Long commentId, CommentRequestDto commentRequestDto) {
+    public void updateComment(Long commentId, CommentRequestDto commentRequestDto) {
         Comment comment = findComment(commentId);
 
         comment.update(commentRequestDto.getContent());
 
-        return new CommentResponseDto(commentRepository.save(comment));
+        commentRepository.save(comment);
     }
 
     @Transactional
     public void deleteComment(Long commentId) {
         Comment comment = findComment(commentId);
+
+        commentRepository.delete(comment);
     }
 
     public Comment findComment(Long commentId) {

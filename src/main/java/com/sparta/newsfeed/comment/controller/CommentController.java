@@ -18,8 +18,8 @@ public class CommentController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{postId}")
-    public CommentResponseDto createComment(@PathVariable Long postId, HttpServletRequest request, @RequestBody CommentRequestDto commentRequestDto) {
-        return commentService.createComment(postId, request, commentRequestDto);
+    public void createComment(@PathVariable Long postId, HttpServletRequest request, @RequestBody CommentRequestDto commentRequestDto) {
+        commentService.createComment(postId, request, commentRequestDto);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -31,8 +31,8 @@ public class CommentController {
     // 댓글의 수정은 댓글의 작성자 혹은 게시글의 작성자만 가능. 사용자 정보, 게시글 정보
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{commentId}")
-    public CommentResponseDto updateComment(@PathVariable Long commentId, @RequestBody CommentRequestDto commentRequestDto) {
-        return commentService.updateComment(commentId, commentRequestDto);
+    public void updateComment(@PathVariable Long commentId, @RequestBody CommentRequestDto commentRequestDto) {
+        commentService.updateComment(commentId, commentRequestDto);
     }
 
     //댓글의 삭제는 댓글의 작성자 혹은 게시글의 작성자만 가능.
