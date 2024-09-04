@@ -28,6 +28,10 @@ public class FollowService {
         Long receiverId = getUserId(request);
         User receiver = getReceiver(request);
 
+        if(followRepository.findByRequesterAndReceiver(requester, receiver).isPresent()) {
+            throw new ApplicationException(ErrorCode.FOLLOW_ALREADY_EXISTS);
+        }
+
         if (requesterId.equals(receiverId)) {
             throw new ApplicationException(ErrorCode.BAD_REQUEST);
         }
