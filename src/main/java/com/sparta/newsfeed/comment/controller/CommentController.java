@@ -16,28 +16,29 @@ import org.springframework.web.bind.annotation.*;
 public class CommentController {
     private final CommentService commentService;
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{postId}")
-    public ResponseEntity<CommentResponseDto> createComment(@PathVariable Long postId, HttpServletRequest request, @RequestBody CommentRequestDto commentRequestDto) {
-        return ResponseEntity.ok(commentService.createComment(postId, request, commentRequestDto));
+    public CommentResponseDto createComment(@PathVariable Long postId, HttpServletRequest request, @RequestBody CommentRequestDto commentRequestDto) {
+        return commentService.createComment(postId, request, commentRequestDto);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{commentId}")
-    public ResponseEntity<CommentResponseDto> getComment(@PathVariable Long commentId) {
-        return ResponseEntity.ok(commentService.getComment(commentId));
+    public CommentResponseDto getComment(@PathVariable Long commentId) {
+        return commentService.getComment(commentId);
     }
-
 
     // 댓글의 수정은 댓글의 작성자 혹은 게시글의 작성자만 가능. 사용자 정보, 게시글 정보
+    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{commentId}")
-    public ResponseEntity<CommentResponseDto> updateComment(@PathVariable Long commentId, @RequestBody CommentRequestDto commentRequestDto) {
-        return ResponseEntity.ok(commentService.updateComment(commentId, commentRequestDto));
+    public CommentResponseDto updateComment(@PathVariable Long commentId, @RequestBody CommentRequestDto commentRequestDto) {
+        return commentService.updateComment(commentId, commentRequestDto);
     }
 
-
     //댓글의 삭제는 댓글의 작성자 혹은 게시글의 작성자만 가능.
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
+    public void deleteComment(@PathVariable Long commentId) {
         commentService.deleteComment(commentId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
