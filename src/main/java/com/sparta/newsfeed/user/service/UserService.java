@@ -4,6 +4,7 @@ import com.sparta.newsfeed.common.config.JwtUtil;
 import com.sparta.newsfeed.common.config.PasswordEncoder;
 import com.sparta.newsfeed.common.exception.ApplicationException;
 import com.sparta.newsfeed.common.exception.ErrorCode;
+import com.sparta.newsfeed.user.dto.response.UserResponseDto;
 import com.sparta.newsfeed.user.dto.request.UserCreateRequestDto;
 import com.sparta.newsfeed.user.dto.request.UserDeleteRquestDto;
 import com.sparta.newsfeed.user.dto.request.UserLoginRequestDto;
@@ -12,7 +13,7 @@ import com.sparta.newsfeed.user.entity.User;
 import com.sparta.newsfeed.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Objects;
-import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -108,5 +109,18 @@ public class UserService {
 
         return userRepository.findById(userId)
             .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    public UserResponseDto getUser(Long userId, HttpServletRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
+
+        Long currentUserId = getUserId(request);
+
+        if (!Objects.equals(userId, currentUserId)) {
+            UserResponseDto simpleUserProfile = new UserResponseDto(user.getNickname(), user.getIntroduction());
+            return simpleUserProfile;
+        }
+        return new UserResponseDto(user);
     }
 }
