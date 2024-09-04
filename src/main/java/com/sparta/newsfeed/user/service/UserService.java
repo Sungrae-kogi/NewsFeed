@@ -11,6 +11,7 @@ import com.sparta.newsfeed.user.dto.request.UserUpdateRequestDto;
 import com.sparta.newsfeed.user.entity.User;
 import com.sparta.newsfeed.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,23 +36,9 @@ public class UserService {
         userRepository.save(user);
     }
 
-    //TODO 이거부터 예외처리 하기 + FILTER부분 예외처리하기 ㅇㅅㅇ
     @Transactional(readOnly = true)
     public String loginUser(UserLoginRequestDto request) {
         User user = userRepository.findByEmail(request.getEmail())
-            .orElseThrow(()->new ApplicationException(ErrorCode.USER_NOT_FOUND));
-
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new ApplicationException(ErrorCode.PASSWORD_NOT_MATCH);
-        }
-
-        String token = jwtUtil.createToken(user.getId());
-        return token;
-    }
-
-    @Transactional
-    public void deleteUser(Long userId, UserDeleteRquestDto request) {
-        User user = userRepository.findById(userId)
             .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
         if (user.isEnabled()) {
@@ -62,27 +49,63 @@ public class UserService {
             throw new ApplicationException(ErrorCode.PASSWORD_NOT_MATCH);
         }
 
+        String token = jwtUtil.createToken(user.getId());
+        return token;
+    }
+
+    @Transactional
+    public void deleteUser(Long userId, UserDeleteRquestDto requestDto,
+        HttpServletRequest request) {
+
+        Long currentUserId = getUserId(request);
+        if (!Objects.equals(userId, currentUserId)) {
+            throw new ApplicationException(ErrorCode.USER_FORBIDDEN);
+        }
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.isEnabled()) {
+            throw new ApplicationException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            throw new ApplicationException(ErrorCode.PASSWORD_NOT_MATCH);
+        }
+
         user.delete();
     }
 
     @Transactional
     public void updateUser(Long userId, UserUpdateRequestDto requestDto,
         HttpServletRequest request) {
+
+        Long currentUserId = getUserId(request);
+        if (!Objects.equals(userId, currentUserId)) {
+            throw new ApplicationException(ErrorCode.USER_FORBIDDEN);
+        }
+
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
-        String token = jwtUtil.getJwtFromHeader(request);
+        Long token = getUserId(request);
 
-        if (!userId.equals(jwtUtil.getUserIdFromToken(token))) {
-            throw new IllegalArgumentException("권한이 없습니다.");
+        if (!userId.equals(token)) {
+            throw new ApplicationException(ErrorCode.USER_FORBIDDEN);
         }
 
         if (passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("기존 사용된 비밀번호는 사용할 수 없습니다");
+            throw new ApplicationException(ErrorCode.PASSWORD_SAME_OLD);
         }
 
         String password = passwordEncoder.encode(requestDto.getPassword());
 
         user.update(requestDto.getNickname(), requestDto.getIntroduction(), password);
+    }
+
+    public Long getUserId(HttpServletRequest request) {
+        String token = jwtUtil.getJwtFromHeader(request);
+        Long userId = jwtUtil.getUserIdFromToken(token);
+        return userId;
     }
 }
