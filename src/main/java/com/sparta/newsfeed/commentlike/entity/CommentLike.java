@@ -3,10 +3,13 @@ package com.sparta.newsfeed.commentlike.entity;
 import com.sparta.newsfeed.comment.entity.Comment;
 import com.sparta.newsfeed.user.entity.User;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CommentLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

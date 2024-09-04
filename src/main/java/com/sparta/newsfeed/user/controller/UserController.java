@@ -20,41 +20,41 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 public class UserController {
 
-  private final UserService userService;
+    private final UserService userService;
 
-  /**
-   * 회원가입을 수행합니다
-   *
-   * @param request email, password, nickname, introduction를 받습니다 반환타입은 없습니다
-   */
-  @PostMapping("/users")
-  public void createUser(@Valid @RequestBody UserCreateRequestDto request) {
-    userService.createUser(request);
-  }
+    /**
+     * 회원가입을 수행합니다
+     *
+     * @param request email, password, nickname, introduction를 받습니다 반환타입은 없습니다
+     */
+    @PostMapping("/users")
+    public void createUser(@Valid @RequestBody UserCreateRequestDto request) {
+        userService.createUser(request);
+    }
 
-  /**
-   * 로그인을 수행합니다.
-   *
-   * @param request email, password를 받습니다
-   * @return jwt token을반환하여, 추후 작업시 헤더에 넣어야 합니다.
-   */
-  @PostMapping("/auth/login")
-  public ResponseEntity<String> loginUser(@RequestBody UserLoginRequestDto request) {
-    String token = userService.loginUser(request);
-    return new ResponseEntity<>(token, HttpStatus.OK);
-  }
+    /**
+     * 로그인을 수행합니다.
+     *
+     * @param request email, password를 받습니다
+     * @return jwt token을반환하여, 추후 작업시 헤더에 넣어야 합니다.
+     */
+    @PostMapping("/auth/login")
+    public ResponseEntity<String> loginUser(@RequestBody UserLoginRequestDto request) {
+        String token = userService.loginUser(request);
+        return new ResponseEntity<>(token, HttpStatus.OK);
+    }
 
-  /**
-   * 회원 탈퇴 기능을 수행합니다. 요구사항에따라 soft delete를 수행합니다
-   *
-   * @param userId  삭제할 유저 아이디를 받습니다.
-   * @param request password를 입력합니다
-   * @return
-   */
-  @DeleteMapping("/users/{userId}")
-  public ResponseEntity<Void> deleteUser(@PathVariable Long userId,
-      @RequestBody UserDeleteRquestDto request) {
-    userService.deleteUser(userId, request);
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-  }
+    /**
+     * 회원 탈퇴 기능을 수행합니다. 요구사항에따라 soft delete를 수행합니다
+     *
+     * @param userId  삭제할 유저 아이디를 받습니다.
+     * @param request password를 입력합니다
+     * @return
+     */
+    @DeleteMapping("/users/{userId}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId,
+            @RequestBody UserDeleteRquestDto request) {
+        userService.deleteUser(userId, request);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
