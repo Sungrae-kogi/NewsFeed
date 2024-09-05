@@ -38,7 +38,7 @@ public class CommentLikeService {
 
         // 본인의 comment에 좋아요를 누르려 한다면
         if (isUserTryingToLikeOwnComment) {
-            throw new ApplicationException(ErrorCode.USER_CANNOTLIKE_OWNCOMMENT);
+            throw new ApplicationException(ErrorCode.USER_CANNOT_LIKE_OWN_COMMENT);
         } else {
             // user가 comment에 좋아요를 한 상태인가?
             boolean alreadyLiked = commentLikeRepository.existsByUserAndComment(user, comment);

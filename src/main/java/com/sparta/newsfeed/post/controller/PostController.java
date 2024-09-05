@@ -55,15 +55,20 @@ public class PostController {
     @PutMapping("/posts/{postId}")
     public void editPost(
             @PathVariable final long postId,
-            @Valid @RequestBody final PostEditRequestDto postEditRequestDto
+            @Valid @RequestBody final PostEditRequestDto postEditRequestDto,
+            final HttpServletRequest httpServletRequest
     ) {
-        postService.editPost(postId, postEditRequestDto);
+        String jwt = jwtUtil.getJwtFromHeader(httpServletRequest);
+        Long userId = jwtUtil.getUserIdFromToken(jwt);
+        postService.editPost(postId, userId, postEditRequestDto);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/posts/{postId}")
-    public void deletePost(@PathVariable final long postId) {
-        postService.deletePost(postId);
+    public void deletePost(@PathVariable final long postId, final HttpServletRequest httpServletRequest) {
+        String jwt = jwtUtil.getJwtFromHeader(httpServletRequest);
+        Long userId = jwtUtil.getUserIdFromToken(jwt);
+        postService.deletePost(postId, userId);
     }
 
     @ResponseStatus(HttpStatus.OK)

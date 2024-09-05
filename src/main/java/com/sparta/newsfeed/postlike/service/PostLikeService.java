@@ -42,7 +42,7 @@ public class PostLikeService {
 
         // 본인의 post에 좋아요를 누르려 한다면
         if (isUserTryingToLikeOwnPost) {
-            throw new ApplicationException(ErrorCode.USER_CANNOTLIKE_OWNPOST);
+            throw new ApplicationException(ErrorCode.USER_CANNOT_LIKE_OWN_POST);
         } else {
             // user가 post에 좋아요를 한 상태인가?
             boolean alreadyLiked = postLikeRepository.existsByUserAndPost(user, post);
