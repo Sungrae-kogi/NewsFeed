@@ -29,7 +29,6 @@ public class UserController {
 
     /**
      * 회원가입을 수행합니다
-     *
      * @param request email, password, nickname, introduction를 받습니다 반환타입은 없습니다
      */
     @PostMapping("/users")
@@ -39,7 +38,6 @@ public class UserController {
 
     /**
      * 로그인을 수행합니다.
-     *
      * @param request email, password를 받습니다
      * @return jwt token을반환하여, 추후 작업시 헤더에 넣어야 합니다.
      */
@@ -54,7 +52,7 @@ public class UserController {
      *
      * @param userId  삭제할 유저 아이디를 받습니다.
      * @param request password를 입력합니다
-     * @return
+     * @return 반환타입은 상태코드와 void입니다.
      */
     @DeleteMapping("/users/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId,
@@ -67,9 +65,9 @@ public class UserController {
      * 유저를 수정합니다
      *
      * @param userId     수정할 유저 아이디를 받습니다
-     * @param requestDto
-     * @param request
-     * @return
+     * @param requestDto 수정할 유저의 nickname, introduction와 password를 받습니다
+     * @param request   수정할 유저가 일치하는지 확인합니다.
+     * @return 반환타입은 상태코드와 void입니다.
      */
     @PutMapping("/users/{userId}")
     public ResponseEntity<Void> updateUser(
@@ -78,9 +76,15 @@ public class UserController {
             HttpServletRequest request
     ) {
         userService.updateUser(userId, requestDto, request);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    /**
+     * 유저를 조회합니다
+     * @param userId 조회할 유저 아이디를 받습니다
+     * @param request user id와 jwt token을 받아 user id가 일치하는지 확인합니다.
+     * @return 조회한 유저의 정보를 반환합니다.
+     */
     @GetMapping("/users/{userId}")
     public ResponseEntity<UserResponseDto> getUser(@PathVariable Long userId, HttpServletRequest request) {
         UserResponseDto userResponseDto = userService.getUser(userId, request);
