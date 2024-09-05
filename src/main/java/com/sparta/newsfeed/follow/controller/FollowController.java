@@ -20,30 +20,27 @@ public class FollowController {
 
     /**
      * 팔로우를 등록합니다
-     *
      * @param requesterId 팔로우 대상 pathvariable로 입력받습니다.
      * @param request
      * @return HTTP status 201 CREATED
      */
     @PostMapping("/friends/{requesterId}")
     public ResponseEntity<Void> followUser(@PathVariable Long requesterId,
-            HttpServletRequest request) {
+        HttpServletRequest request) {
         followService.followUser(requesterId, request);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     /**
      * 팔로우를 취소합니다
-     *
-     * @param requesterId 팔로우를 취소할 user id를 pathvariable로 입력받습니다.
+     * @param receiverId 팔로우를 취소할 user id를 pathvariable로 입력받습니다.
      * @param request     로그인한 유저 정보를 받아옵니다
      * @return HTTP status 204 NO_CONTENT
      */
     @DeleteMapping("/friends/{requesterId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long requesterId,
-            HttpServletRequest request) {
-        followService.unFollowUser(requesterId, request);
+    public ResponseEntity<Void> deleteUser(@PathVariable Long receiverId,
+        HttpServletRequest request) {
+        followService.unFollowUser(receiverId, request);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
 }

@@ -21,12 +21,12 @@ public class FollowService {
     private final JwtUtil jwtUtil;
 
     @Transactional
-    public void followUser(Long requesterId, HttpServletRequest request) {
-        User requester = userRepository.findById(requesterId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
+    public void followUser(Long receiverId, HttpServletRequest request) {
+        User receiver = userRepository.findById(receiverId)
+            .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
-        Long receiverId = getUserId(request);
-        User receiver = getReceiver(request);
+        Long requesterId = getUserId(request);
+        User requester = getRequester(request);
 
         if(followRepository.findByRequesterAndReceiver(requester, receiver).isPresent()) {
             throw new ApplicationException(ErrorCode.FOLLOW_ALREADY_EXISTS);
@@ -36,18 +36,22 @@ public class FollowService {
             throw new ApplicationException(ErrorCode.BAD_REQUEST);
         }
 
+        if(requester.isDeleted() || receiver.isDeleted()) {
+            throw new ApplicationException(ErrorCode.USER_NOT_FOUND);
+        }
+
         followRepository.save(new Follow(requester, receiver));
     }
 
     @Transactional
-    public void unFollowUser(Long requesterId, HttpServletRequest request) {
-        User requester = userRepository.findById(requesterId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
+    public void unFollowUser(Long receiverId, HttpServletRequest request) {
+        User receiver = userRepository.findById(receiverId)
+            .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
-        User receiver = getReceiver(request);
+        User requester = getRequester(request);
 
         Follow follow = followRepository.findByRequesterAndReceiver(requester, receiver)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.FOLLOW_NOT_FOUND));
+            .orElseThrow(() -> new ApplicationException(ErrorCode.FOLLOW_NOT_FOUND));
 
         followRepository.delete(follow);
     }
@@ -58,12 +62,12 @@ public class FollowService {
         return userId;
     }
 
-    private User getReceiver(HttpServletRequest request) {
-        Long receiverId = getUserId(request);
+    private User getRequester(HttpServletRequest request) {
+        Long requesterId = getUserId(request);
 
-        User receiver = userRepository.findById(receiverId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.BAD_REQUEST));
+        User requester = userRepository.findById(requesterId)
+            .orElseThrow(() -> new ApplicationException(ErrorCode.BAD_REQUEST));
 
-        return receiver;
+        return requester;
     }
 }
