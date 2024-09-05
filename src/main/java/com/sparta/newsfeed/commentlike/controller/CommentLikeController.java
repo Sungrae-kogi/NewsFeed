@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/commentlikes")
+@RequestMapping("/api/v1")
 public class CommentLikeController {
 
     private final CommentLikeService commentLikeService;
@@ -27,7 +27,7 @@ public class CommentLikeController {
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/commentlikes/{postLikeId}")
+    @DeleteMapping("/commentlikes/{commentLikeId}")
     public void deleteCommentLike(HttpServletRequest request, @PathVariable Long commentLikeId) {
         commentLikeService.deleteCommentLike(request, commentLikeId);
     }

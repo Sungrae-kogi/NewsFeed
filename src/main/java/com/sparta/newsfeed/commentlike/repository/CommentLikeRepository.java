@@ -15,4 +15,6 @@ public interface CommentLikeRepository extends JpaRepository<CommentLike, Long> 
     List<CommentLike> findByComment(Comment comment);
 
     void deleteAllByCommentIdIn(final List<Long> commentIds);
+
+    void deleteAllByCommentId(final Long commentId);
 }

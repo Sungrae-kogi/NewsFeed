@@ -2,8 +2,10 @@ package com.sparta.newsfeed.comment.dto;
 
 import com.sparta.newsfeed.comment.entity.Comment;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class CommentResponseDto {
 
     private String nickname;
