@@ -18,35 +18,35 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/posts")
+@RequestMapping("/api/v1/comments")
 public class CommentController {
 
     private final CommentService commentService;
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/{postId}/comments")
+    @PostMapping("/{postId}")
     public void createComment(@PathVariable Long postId, HttpServletRequest request,
             @RequestBody CommentRequestDto commentRequestDto) {
         commentService.createComment(postId, request, commentRequestDto);
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/comments/{commentId}")
+    @GetMapping("/{commentId}")
     public CommentResponseDto getComment(@PathVariable Long commentId) {
         return commentService.getComment(commentId);
     }
 
     // 댓글의 수정은 댓글의 작성자 혹은 게시글의 작성자만 가능. 사용자 정보, 게시글 정보
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/comments/{commentId}")
+    @PutMapping("/{commentId}")
     public void updateComment(HttpServletRequest request, @PathVariable Long commentId,
             @RequestBody CommentRequestDto commentRequestDto) {
         commentService.updateComment(request, commentId, commentRequestDto);
     }
 
-    //댓글의 삭제는 댓글의 작성자 혹은 게시글의 작성자만 가능. -> softdelete
+    //댓글의 삭제는 댓글의 작성자 혹은 게시글의 작성자만 가능.
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/comments/{commentId}")
+    @DeleteMapping("/{commentId}")
     public void deleteComment(HttpServletRequest request, @PathVariable Long commentId) {
         commentService.deleteComment(request, commentId);
     }

@@ -4,7 +4,6 @@ import com.sparta.newsfeed.comment.dto.CommentRequestDto;
 import com.sparta.newsfeed.comment.dto.CommentResponseDto;
 import com.sparta.newsfeed.comment.entity.Comment;
 import com.sparta.newsfeed.comment.repository.CommentRepository;
-import com.sparta.newsfeed.commentlike.repository.CommentLikeRepository;
 import com.sparta.newsfeed.commentlike.service.CommentLikeService;
 import com.sparta.newsfeed.common.config.JwtUtil;
 import com.sparta.newsfeed.common.exception.ApplicationException;
@@ -25,7 +24,6 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final CommentLikeRepository commentLikeRepository;
     private final CommentLikeService commentLikeService;
     private final JwtUtil jwtUtil;
 
@@ -77,17 +75,12 @@ public class CommentService {
         User user = userRepository.findById(getUserId(request))
                 .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
-        // 삭제하고자 하는 Comment의 IsDeleted 상태가 False인지 판별 아니라면 예외 Throw
-        Comment comment = commentRepository.findByIdAndIsDeletedIsFalse(commentId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.COMMENT_NOT_FOUND));;
+        Comment comment = findComment(commentId);
 
         // 댓글 작성자의 Id와 사용자의 Id, 게시물 작성자의 Id와 비교
         if ((user.getId() == comment.getUser().getId()) || (user.getId() == comment.getPost().getId())) {
             // 삭제을 요청한 유저Id가 댓글의 유저Id 또는 게시물의 유저Id와 일치한다면 -> 삭제 가능
-
-            //comment에 찍힌 좋아요 데이터를 삭제합니다.
-            commentLikeRepository.deleteAllByCommentId(comment.getId());
-            comment.delete();
+            commentRepository.delete(comment);
         } else {
             // Id가 일치하지 않으면 -> 수정 불가
             throw new ApplicationException(ErrorCode.USER_CANNOTDELETE_COMMENT);
