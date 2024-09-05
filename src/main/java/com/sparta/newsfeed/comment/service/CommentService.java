@@ -64,7 +64,7 @@ public class CommentService {
             comment.update(commentRequestDto.getContent());
         } else {
             // Id가 일치하지 않으면 -> 수정 불가
-            throw new ApplicationException(ErrorCode.USER_CANNOTUPDATE_COMMENT);
+            throw new ApplicationException(ErrorCode.USER_CANNOT_UPDATE_COMMENT);
         }
         commentRepository.save(comment);
     }
@@ -83,7 +83,7 @@ public class CommentService {
             commentRepository.delete(comment);
         } else {
             // Id가 일치하지 않으면 -> 수정 불가
-            throw new ApplicationException(ErrorCode.USER_CANNOTDELETE_COMMENT);
+            throw new ApplicationException(ErrorCode.USER_CANNOT_DELETE_COMMENT);
         }
     }
 
