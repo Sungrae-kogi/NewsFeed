@@ -56,16 +56,23 @@ public class PostController {
     @PutMapping("/posts/{postId}")
     public String editPost(
             @PathVariable final long postId,
-            @Valid @RequestBody final PostEditRequestDto postEditRequestDto
+            @Valid @RequestBody final PostEditRequestDto postEditRequestDto,
+            final HttpServletRequest httpServletRequest
     ) {
+
+        String jwt = jwtUtil.getJwtFromHeader(httpServletRequest);
+        Long userId = jwtUtil.getUserIdFromToken(jwt);
         postService.editPost(postId, postEditRequestDto);
         return "게시글이 수정되었습니다";
+
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/posts/{postId}")
-    public void deletePost(@PathVariable final long postId) {
-        postService.deletePost(postId);
+    public void deletePost(@PathVariable final long postId, final HttpServletRequest httpServletRequest) {
+        String jwt = jwtUtil.getJwtFromHeader(httpServletRequest);
+        Long userId = jwtUtil.getUserIdFromToken(jwt);
+        postService.deletePost(postId, userId);
     }
 
     @ResponseStatus(HttpStatus.OK)

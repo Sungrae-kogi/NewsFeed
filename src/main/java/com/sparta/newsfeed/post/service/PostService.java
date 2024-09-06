@@ -15,7 +15,6 @@ import com.sparta.newsfeed.post.repository.PostRepository;
 import com.sparta.newsfeed.postlike.repository.PostLikeRepository;
 import com.sparta.newsfeed.user.entity.User;
 import com.sparta.newsfeed.user.repository.UserRepository;
-import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,18 +58,20 @@ public class PostService {
     }
 
     @Transactional
-    public void editPost(final long postId, @Valid PostEditRequestDto postEditRequestDto) {
+    public void editPost(final long postId, final long requesterId, final PostEditRequestDto postEditRequestDto) {
         Post post = postRepository.findByIdAndIsDeletedIsFalse(postId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.POST_NOT_FOUND));
-
+        validateRequesterHasAuthority(requesterId, post.getUser().getId());
+        
         post.changeTitle(postEditRequestDto.getTitle());
         post.changeContent(postEditRequestDto.getContent());
     }
 
     @Transactional
-    public void deletePost(final long postId) {
+    public void deletePost(final long postId, final long requesterId) {
         Post post = postRepository.findByIdAndIsDeletedIsFalse(postId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.POST_NOT_FOUND));
+        validateRequesterHasAuthority(requesterId, post.getUser().getId());
 
         List<Comment> comments = commentRepository.findAllByPostIdAndIsDeletedIsFalse(postId);
         List<Long> commentIds = comments.stream()
@@ -144,5 +145,11 @@ public class PostService {
         }
 
         return postResponseDtos;
+    }
+
+    private void validateRequesterHasAuthority(long requesterId, long writerId) {
+        if (writerId != requesterId) {
+            throw new ApplicationException(ErrorCode.USER_FORBIDDEN);
+        }
     }
 }
