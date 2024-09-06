@@ -55,16 +55,14 @@ public class PostController {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/posts/{postId}")
     public String editPost(
-            @PathVariable final long postId,
-            @Valid @RequestBody final PostEditRequestDto postEditRequestDto,
-            final HttpServletRequest httpServletRequest
+        @PathVariable final long postId,
+        @Valid @RequestBody final PostEditRequestDto postEditRequestDto,
+        final HttpServletRequest httpServletRequest
     ) {
-
         String jwt = jwtUtil.getJwtFromHeader(httpServletRequest);
         Long userId = jwtUtil.getUserIdFromToken(jwt);
-        postService.editPost(postId, postEditRequestDto);
-        return "게시글이 수정되었습니다";
-
+        postService.editPost(postId, userId, postEditRequestDto);
+        return "게시물이 수정되었습니다";
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
