@@ -25,9 +25,10 @@ public class CommentController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{postId}/comments")
-    public void createComment(@PathVariable Long postId, HttpServletRequest request,
+    public String createComment(@PathVariable Long postId, HttpServletRequest request,
             @RequestBody CommentRequestDto commentRequestDto) {
         commentService.createComment(postId, request, commentRequestDto);
+        return "댓글이 성공적으로 등록되었습니다.";
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -39,9 +40,10 @@ public class CommentController {
     // 댓글의 수정은 댓글의 작성자 혹은 게시글의 작성자만 가능. 사용자 정보, 게시글 정보
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/comments/{commentId}")
-    public void updateComment(HttpServletRequest request, @PathVariable Long commentId,
+    public String updateComment(HttpServletRequest request, @PathVariable Long commentId,
             @RequestBody CommentRequestDto commentRequestDto) {
         commentService.updateComment(request, commentId, commentRequestDto);
+        return "댓글이 성공적으로 수정되었습니다.";
     }
 
     //댓글의 삭제는 댓글의 작성자 혹은 게시글의 작성자만 가능. -> softdelete
