@@ -32,8 +32,9 @@ public class UserController {
      * @param request email, password, nickname, introduction를 받습니다 반환타입은 없습니다
      */
     @PostMapping("/users")
-    public void createUser(@Valid @RequestBody UserCreateRequestDto request) {
+    public ResponseEntity<String> createUser(@Valid @RequestBody UserCreateRequestDto request) {
         userService.createUser(request);
+        return new ResponseEntity<>("유저 생성이 완료되었습니다", HttpStatus.CREATED);
     }
 
     /**
@@ -70,13 +71,13 @@ public class UserController {
      * @return 반환타입은 상태코드와 void입니다.
      */
     @PutMapping("/users/{userId}")
-    public ResponseEntity<Void> updateUser(
+    public ResponseEntity<String> updateUser(
             @PathVariable Long userId,
             @RequestBody UserUpdateRequestDto requestDto,
             HttpServletRequest request
     ) {
         userService.updateUser(userId, requestDto, request);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>("유저가 수정되었습니다",HttpStatus.OK);
     }
 
     /**
