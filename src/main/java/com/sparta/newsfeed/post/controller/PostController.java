@@ -37,12 +37,13 @@ public class PostController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/posts")
-    public void createPost(
+    public String createPost(
             @Valid @RequestBody final PostCreateRequestDto postCreateRequestDto,
             final HttpServletRequest httpServletRequest
     ) {
         long userId = getUserIdFromServletRequestOrThrow(httpServletRequest);
         postService.createPost(userId, postCreateRequestDto);
+        return "게시글이 등록되었습니다";
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -53,11 +54,12 @@ public class PostController {
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/posts/{postId}")
-    public void editPost(
+    public String editPost(
             @PathVariable final long postId,
             @Valid @RequestBody final PostEditRequestDto postEditRequestDto
     ) {
         postService.editPost(postId, postEditRequestDto);
+        return "게시글이 수정되었습니다";
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
