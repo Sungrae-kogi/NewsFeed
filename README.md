@@ -79,6 +79,14 @@
     <li>Intellij</li>
   </ul>
 </details>
+<details>
+  <summary>기술 스택</summary>
+  <ul>
+    <li>Spring JPA</li>
+    <li>JWT</li>
+    <li>MySQL</li>
+  </ul>
+</details>
 
 ## Github Rules
 https://teamsparta.notion.site/Github-Rules-2264168a0ea04e9ea26be4283391045e
